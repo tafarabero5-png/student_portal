@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Marks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='design_entermarks.css') }}">
+</head>
+<div class="container">
+<body>
+    <div class="container">
+    <h2>Enter Marks for {{ class_name }} - {{ subject_name }} ({{ term }})</h2>
+
+    <form method="POST" action="/enter_marks">
+        <!-- Hidden inputs to keep data -->
+        <input type="hidden" name="class_id" value="{{ class_id }}">
+        <input type="hidden" name="subject_id" value="{{ subject_id }}">
+        <input type="hidden" name="term" value="{{ term }}">
+
+        <table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Surname</th>
+            <th>Firstname</th>
+            <th>Mark</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.surname }}</td>
+            <td>{{ student.firstname }}</td>
+            <td>
+                <input type="number" name="mark_{{ student.id }}" min="0" max="100" required>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+        <br>
+        <button type="submit">Save Marks</button>
+    </form>
+</div>
+</body>
+</html>

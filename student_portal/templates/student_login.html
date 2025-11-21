@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Login</title>
+  <link rel="stylesheet" href="{{ url_for('static',
+  filename='student_login.css') }}">
+</head>
+<body>
+  <div class="login-container">
+  <h2>Student Login</h2>
+  <form method="POST" action="/">
+    <input type="text" name="firstname" placeholder="Enter Your First Name" required><br>
+    <input type="text" name="surname" placeholder="Enter Your Surname"required><br>
+    <input type="text" name="id" placeholder="Student ID Number" required><br><br>
+    <label for="term">Select Term:</label>
+  <select name="term" required>
+    <option value="Term 1">Term 1</option>
+    <option value="Term 2">Term 2</option>
+    <option value="Term 3">Term 3</option>
+  </select><br><br>
+
+    <button type="submit">Check Results</button>
+  </form>
+  </div>
+</body>
+</html>

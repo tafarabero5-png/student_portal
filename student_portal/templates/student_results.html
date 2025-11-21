@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='student_results.css') }}">
+</head>
+<body>
+  <div class="container">
+  <h2>Results for {{ student.Firstname }} {{ student.Surname }}</h2>
+
+  <p>Total Subjects: {{ results|length }}</p>
+
+  {% for result in results %}
+    <div>
+      <strong>Subject:</strong> {{ result.subject }} <br>
+      <strong>Score:</strong> {{ result.score }} <br>
+      <strong>Grade:</strong> {{ result.grade }}
+    </div>
+    <hr>
+  {% endfor %}
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+

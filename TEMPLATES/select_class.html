@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Class and Subject</title>
+    <link rel="stylesheet" href="{{ url_for('static',
+     filename='class_design.css')}}">
+    <script>
+      function filterSubjects() {
+        const selectedClass = document.getElementById('class_id').value;
+        const subjectSelect = document.getElementById('subject_id');
+        const options = subjectSelect.options;
+
+        for (let i = 0; i < options.length; i++) {
+          const classId = options[i].getAttribute('data-class');
+          options[i].style.display = (classId === selectedClass || options[i].value === "") ? 'block' : 'none';
+        }
+
+        subjectSelect.value = "";
+      }
+    </script>
+</head>
+<body>
+  <div class=" container">
+    <h2>Select Class, Subject, and Term</h2>
+
+    <form method="GET" action="/enter_marks">
+        <label for="class_id">Class:</label>
+        <select id="class_id" name="class_id" onchange="filterSubjects()" required>
+            <option value="" disabled selected>Select Class</option>
+            {% for cls in classes %}
+            <option value="{{ cls.id }}">{{ cls.name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="subject_id">Subject:</label>
+        <select id="subject_id" name="subject_id" required>
+            <option value="" disabled selected>Select Subject</option>
+            {% for subject in subjects %}
+            <option value="{{ subject.id }}" data-class="{{ subject.class_id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="term">Term:</label>
+        <select id="term" name="term" required>
+            <option value="" disabled selected>Select Term</option>
+            <option value="Term 1">Term 1</option>
+            <option value="Term 2">Term 2</option>
+            <option value="Term 3">Term 3</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Proceed to Enter Marks</button>
+    </form>
+ </div>     
+</body>
+</html>
