@@ -1,13 +1,18 @@
 from flask import Flask, render_template,request,redirect,session
 import pymysql
 import requests
+import os
 app= Flask(__name__)
 app.secret_key='tafara victor'
 
 #database  connection function
 def get_database():
-    return pymysql.connect(host='localhost',user='root',password="victor", database='fca_ereport',
-                           cursorclass=pymysql.cursors.DictCursor);
+     return pymysql.connect(
+         host=os.getenv('DB_HOST'),
+         user=os.getenv('DB_USER'),
+         password=os.getenv('DB_PASSWORD'),
+         database=os.getenv('DB_NAME'),
+                        cursorclass=pymysql.cursors.DictCursor);
 
 #login for the teacher
 @app.route('/', methods=['GET', 'POST'])

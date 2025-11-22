@@ -1,16 +1,21 @@
 from flask import Flask, render_template, request, redirect, session
 import pymysql
+import os
 
 app = Flask(__name__)
 app.secret_key = 'tafara victor'
 
 #Database connection function
 def get_database():
-    return pymysql.connect(
-        host='b8u8djki54hhwxdpdb5p-mysql.services.clever-cloud.com',
-                           user='umpvjxjzhtgd5rzi',password="zIW9e61abxf58aWqhkU3", database='b8u8djki54hhwxdpdb5p',port=3306,
+    return pymysql.connect(host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_NAME'),
+        
         cursorclass=pymysql.cursors.DictCursor
     )
+
+
 
 #Student login page
 @app.route('/', methods=['GET','POST'])
