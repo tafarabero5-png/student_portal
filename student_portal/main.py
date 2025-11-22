@@ -7,10 +7,8 @@ app.secret_key = 'tafara victor'
 #Database connection function
 def get_database():
     return pymysql.connect(
-        host='localhost',
-        user='root',
-        password="victor",
-        database='fca_ereport',
+        host='b8u8djki54hhwxdpdb5p-mysql.services.clever-cloud.com',
+                           user='umpvjxjzhtgd5rzi',password="zIW9e61abxf58aWqhkU3", database='b8u8djki54hhwxdpdb5p',port=3306,
         cursorclass=pymysql.cursors.DictCursor
     )
 
