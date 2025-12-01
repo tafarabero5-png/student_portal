@@ -1,16 +1,20 @@
-import pymysql
-def get_database():
-    return pymysql.connect(  host='sql10.freesqldatabase.com',
-         user='sql10808959',
-        password='uXxkwd2L3E',
-        database='sql10808959',
+import socket
+import psycopg2
 
-                           cursorclass=pymysql.cursors.DictCursor);
-try:
-    connection = get_database()
-    print("✅ Connected to the database successfully!")
-    connection.close()
-except Exception as e:
-    print("❌ Connection failed:")
-    print(e)
+
+ip = socket.gethostbyname("db.aqpfuhcbqjnyfjocdfex.supabase.co")
+
+conn = psycopg2.connect(
+    host=ip,
+    database="postgres",
+    user="postgres",
+    password="tafaravictor@2007",
+    port="5432"
+)
+
+print("Connected!")
+
+
+
+
 

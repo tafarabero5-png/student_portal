@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
-import pymysql
+import psycopg2
+import psycopg2.extras
 import os
 
 app = Flask(__name__)
@@ -7,15 +8,25 @@ app.secret_key = 'tafara victor'
 
 #Database connection function
 def get_database():
-    return pymysql.connect(host=os.getenv('DB_HOST'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        database=os.getenv('DB_NAME'),
-        
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    host = os.getenv('DB_HOST')
+    user = os.getenv('DB_USER')
+    password = os.getenv('DB_PASSWORD')
+    database = os.getenv('DB_NAME')
 
+    # Debug print (optional, remove later)
+    print(f"Connecting with: host={host}, user={user}, database={database}")
 
+    if not all([host, user, password, database]):
+        raise Exception("One or more environment variables are missing!")
+    return psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    dbname=os.getenv("DB_NAME"),
+    sslmode='require',
+    cursor_factory=psycopg2.extras.DictCursor
+)
 
 #Student login page
 @app.route('/', methods=['GET','POST'])
@@ -26,7 +37,8 @@ def student_login():
       student_id=request.form['id']
       term=request.form['term']
       conn=get_database()
-      cursor=conn.cursor(pymysql.cursors.DictCursor)
+      cursor=conn.cursor()
+
       cursor.execute("SELECT * FROM students WHERE Firstname=%s AND Surname=%s AND id=%s",(firstname,surname,student_id))
       student=cursor.fetchone()
       conn.close()
@@ -52,7 +64,8 @@ def student_portal():
         return redirect('/')
 
     conn = get_database()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
     cursor.execute("SELECT * FROM students WHERE id=%s", (student_id,))
     student = cursor.fetchone()
 
@@ -84,5 +97,4 @@ def student_portal():
 #Entry point
 if __name__ == 'main':
     app.run(debug=True, port=5001)
-
-
+    

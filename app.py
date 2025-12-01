@@ -1,25 +1,47 @@
 from flask import Flask, render_template,request,redirect,session
-import pymysql
 import requests
+import psycopg2
+import psycopg2.extras
+
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 app= Flask(__name__)
 app.secret_key='tafara victor'
 
 #database  connection function
 def get_database():
-     return pymysql.connect(
-         host=os.getenv('DB_HOST'),
-         user=os.getenv('DB_USER'),
-         password=os.getenv('DB_PASSWORD'),
-         database=os.getenv('DB_NAME'),
-                        cursorclass=pymysql.cursors.DictCursor);
+    print("DB_HOST =", os.getenv('DB_HOST'))
+    print("DB_USER =", os.getenv('DB_USER'))
+    print("DB_NAME =", os.getenv('DB_NAME'))
+
+    host = os.getenv('DB_HOST')
+    user = os.getenv('DB_USER')
+    password = os.getenv('DB_PASSWORD')
+    database = os.getenv('DB_NAME')
+
+    # Debug print (optional, remove later)
+    print(f"Connecting with: host={host}, user={user}, database={database}")
+
+    if not all([host, user, password, database]):
+        raise Exception("One or more environment variables are missing!")
+    return psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    dbname=os.getenv("DB_NAME"),
+     sslmode='require',
+    cursor_factory=psycopg2.extras.DictCursor
+)
 
 #login for the teacher
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
-        password = (request.form['password'].encode())
+        password = request.form['password']
         conn = get_database()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM teachers WHERE username=%s AND password=%s", (username, password))
@@ -39,7 +61,8 @@ def select_class():
         return redirect('/')
 
     conn = get_database()
-    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+  
 
     if request.method == 'POST':
         class_id = request.form['class_id']
@@ -127,7 +150,8 @@ def enter_marks():
             return redirect('/select_class')
 
         conn = get_database()
-        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
     cursor.execute("""
                       SELECT s.id, s.firstname, s.surname
         FROM students s
