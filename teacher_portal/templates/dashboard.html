@@ -2,8 +2,17 @@
 <html>
 <head><title>Dashboard</title></head>
 <body>
-  <h2>Welcome, {{ subject }} teacher </h2>
-  <a href="/select_class">Enter Marks</a> |
-  <a href="/logout">Logout</a>
+  <div class="container">
+    <h4 class="subtitle">NEO-CLASS</h4>
+  <h2 class="maintitle">WELCOME USER!!<br>Login to proceed</h2>
+  <div class="login_buttons">
+  <form action ="login.html" method="get">
+  <button type="submit">TEACHER LOGIN</button>
+  </form>
+  <form action="admin_login.html" method="get">
+  <button type="submit">ADMIN LOGIN</button>
+  </form>
+  </div>
+  </div>
 </body>
 </html>

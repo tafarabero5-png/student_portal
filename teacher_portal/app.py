@@ -12,10 +12,6 @@ app.secret_key='tafara victor'
 
 #database  connection function
 def get_database():
-    print("DB_HOST =", os.getenv('DB_HOST'))
-    print("DB_USER =", os.getenv('DB_USER'))
-    print("DB_NAME =", os.getenv('DB_NAME'))
-
     host = os.getenv('DB_HOST')
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
@@ -190,7 +186,7 @@ def enter_marks():
 @app.route('/save_marks', methods=['POST'])
 def save_marks():
     class_id = session.get('class_id')
-    term = 'Term 1'  # You can add term input later
+    term = 'Term 1'  
 
     conn = get_database
     cursor = conn.cursor()
@@ -224,44 +220,6 @@ def save_marks():
 def mark_success():
     return render_template('marks_success.html')
 
-#SEND REPORTS TO PARENTS
-@app.route('/send',methods=['GET','POST'])
-def send_reports():
-    if 'teacher_id' not in session:
-        return redirect('/')
-    
-    if request.method=='POST':
-        term=request.form['term']
-        conn=get_database()
-        cursor=conn.cursor()
-        cursor.execute("SELECT * FROM students")
-        students=cursor.fetchall()
-
-        for student in students:
-         student_id=student['id']
-         name=student['name']
-         phone=student['parent_phone']
-
-         cursor.execute("""
-                SELECT subject, score FROM marks
-                WHERE student_id=%s AND term=%s
-            """, (student_id, term))
-
-        marks=cursor.fetchall()
-        if not marks:
-         msg = f"Report for {name} ({term}):\n"
-        total = 0
-        for m in marks:
-                msg += f"- {m['subject']}: {m['score']}\n"
-        
-
-        #send whatsapp message using chat API
-    payload={"phone":phone, "body":msg}
-    requests.post("https://api.chat-api.com/instanceXXXX/sendMessage?token=YOUR_TOKEN",json=payload)
-    conn.close()
-    return "REPORTS SENT SUCCESSFULLY!"
-    return 
-    render_template('send_reports.html')
 
 
 #LOGOUT
