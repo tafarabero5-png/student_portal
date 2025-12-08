@@ -12,6 +12,7 @@ def get_database():
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
     database = os.getenv('DB_NAME')
+    sslmode='require'
 
     # Debug print (optional, remove later)
     print(f"Connecting with: host={host}, user={user}, database={database}")
@@ -24,7 +25,6 @@ def get_database():
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASSWORD"),
     dbname=os.getenv("DB_NAME"),
-    sslmode='require',
     cursor_factory=psycopg2.extras.DictCursor
 )
 
