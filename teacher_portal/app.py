@@ -244,7 +244,8 @@ def mark_success(subject_id):
         FROM marks m
         JOIN students s ON s.id = m.student_id
                     where m.subject_id=%s
-        GROUP BY s.id
+        GROUP BY s.firstname, s.surname
+
         ORDER BY  max_score DESC
         LIMIT 1;
                     """,(subject_id,))
