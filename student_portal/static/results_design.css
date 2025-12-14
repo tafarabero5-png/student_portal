@@ -15,10 +15,19 @@ body {
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    text-align: center;
+h4 {
+    text-align: left;
     color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+}
+h5{
+    font-size: 15px;
+    font-family: 'Poppins','Segoe UI',sans-serif;
+    font-weight: 600;
+    margin: 0.5em 0;
+    line-height: 1,2;
+    color: #333;
+    text-align: center;
 }
 
 p {

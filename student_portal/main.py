@@ -12,9 +12,8 @@ def get_database():
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
     database = os.getenv('DB_NAME')
-    sslmode='require'
 
-    # Debug print (optional, remove later)
+    # Debug prinT
     print(f"Connecting with: host={host}, user={user}, database={database}")
 
     if not all([host, user, password, database]):
@@ -79,6 +78,7 @@ def student_portal():
         WHEN m.score >= 65 THEN 'B'
         WHEN m.score >= 50 THEN 'C'
         WHEN m.score >= 40 THEN 'D'
+        WHEN m.score >= 30 THEN 'E'
         ELSE 'O'
     END AS grade
     FROM marks m

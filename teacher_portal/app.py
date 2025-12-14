@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request,redirect,session
+from flask import Flask, render_template,request,redirect,session, url_for
 import requests
 import psycopg2
 import psycopg2.extras
@@ -28,7 +28,6 @@ def get_database():
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASSWORD"),
     dbname=os.getenv("DB_NAME"),
-     sslmode='require',
     cursor_factory=psycopg2.extras.DictCursor
 )
 
@@ -50,6 +49,8 @@ def login():
         else:
             return "oops invalid credentials!!"
     return render_template('login.html')
+
+
 #teacher selects the class to input marks
 @app.route('/select_class', methods=['GET', 'POST'])
 def select_class():
@@ -97,7 +98,7 @@ def enter_marks():
         class_id = request.form['class_id']
         subject_id = request.form['subject_id']
         term = request.form['term']
-
+    
         marks = []
         conn = get_database()
         cursor = conn.cursor()
@@ -135,25 +136,29 @@ def enter_marks():
         cursor.close()
         conn.close()
 
-        return redirect('/marks_success')
+        return redirect(url_for('mark_success', subject_id=subject_id))
+
+
     else:
         # On GET, load students to show the form
         class_id = request.args.get('class_id')
         subject_id = request.args.get('subject_id')
         term = request.args.get('term')
-
+        
         if not (class_id and subject_id and term):
             return redirect('/select_class')
 
         conn = get_database()
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
+        
+        
     cursor.execute("""
-                      SELECT s.id, s.firstname, s.surname
+        SELECT s.id, s.firstname, s.surname
         FROM students s
         JOIN student_subjects ss ON s.id = ss.student_id
         WHERE ss.subject_id = %s AND s.class_id = %s
-    """, (subject_id, class_id))
+        """
+    , (subject_id, class_id))
     students = cursor.fetchall()
 
     # Fetch class name
@@ -188,7 +193,7 @@ def save_marks():
     class_id = session.get('class_id')
     term = 'Term 1'  
 
-    conn = get_database
+    conn = get_database()
     cursor = conn.cursor()
 
     cursor.execute("SELECT id FROM students WHERE class_id = %s", (class_id,))
@@ -216,9 +221,64 @@ def save_marks():
     conn.close()
     return "Marks Saved Successfully"
 #returning back to the  login page
-@app.route('/marks_success')
-def mark_success():
-    return render_template('marks_success.html')
+@app.route('/marks_success/<int:subject_id>')
+def mark_success(subject_id):
+     conn=get_database()
+     cursor=conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+     #suject name
+     cursor.execute("select name from  subjects  where id =%s ",(subject_id,))
+     subject=cursor.fetchone()
+     subject_name=subject['name'] if subject else "unknown"
+     #class name
+     cursor.execute("select name from classes where id=%s",(subject_id,))
+     classes=cursor.fetchone()
+     class_name=classes['name'] if classes else "unknown class"
+                    
+     
+    #total students who do that subject
+     cursor.execute("select count(distinct student_id) from marks where subject_id=%s",(subject_id,))
+     total_students=cursor.fetchone()[0]
+     # Top performer (based on highest mark)
+     cursor.execute("""
+        SELECT s.firstname || ' ' || s.surname AS name, MAX(m.score) as max_score
+        FROM marks m
+        JOIN students s ON s.id = m.student_id
+                    where m.subject_id=%s
+        GROUP BY s.id
+        ORDER BY  max_score DESC
+        LIMIT 1;
+                    """,(subject_id,))
+     top_performer = cursor.fetchone()
+     #passrate for the subject
+     cursor.execute("""
+        SELECT  
+               ROUND(COUNT(*) FILTER (WHERE m.score >= 50)::numeric / COUNT(*) * 100, 2) AS pass_rate
+        FROM marks as m
+        where m.subject_id=%s
+    """,(subject_id,))
+     pass_rate=cursor.fetchone()['pass_rate']
+     #top 5 students
+     cursor.execute("""
+                    select s.firstname || ' ' || s.surname AS name,m.student_id,m.score 
+                    from marks m
+                    join students s on s.id=m.student_id
+                    where m.subject_id=%s
+                    order by m.score desc
+                    limit 5
+                    """,(subject_id,))
+     top_5=cursor.fetchall()
+     #bottom 5 students
+     cursor.execute(""" select s.firstname || ' ' || s.surname AS name,m.student_id,m.score
+                    from marks m
+                    join students s on s.id=m.student_id
+                    where m.subject_id=%s
+                    order by m.score asc
+                    limit 5
+""",(subject_id,))
+     bottom_5=cursor.fetchall()
+     
+     return render_template('marks_success.html',subject_name=subject_name,total_students=total_students,
+                            top_5=top_5, bottom_5=bottom_5,class_name=class_name,top_performer=top_performer,pass_rate=pass_rate)
 
 
 

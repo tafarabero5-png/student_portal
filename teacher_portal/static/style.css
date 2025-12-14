@@ -7,6 +7,12 @@ body {
     align-items: center;
     justify-content: center;
 }
+.button-group{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
 
 .login-container {
     background-color: #fff;
@@ -16,7 +22,8 @@ body {
     width: 700px; 
     max-width: 90%;
     box-sizing: border-box;
-    min-height: 500px;
+    min-height: 550px;
+    
 }
 
 .login-container h2 {
@@ -25,11 +32,12 @@ body {
     color: #333;
 }
 
+
 .login-container input[type="text"],
 .login-container input[type="password"],
 .login-container select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 13px 15px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -48,4 +56,45 @@ body {
 }
 .login-container button:hover {
     background-color: #218838;
+}
+.admin-container button{
+    padding: 10px 20px;
+    background-color:white;
+    color: #00264d;
+    border-radius: 20px;
+    margin-top: 20px;
+    font-weight: bold;
+    
+    font-size: 11px;
+    display: inline-block;
+}
+.admin-container button:hover{
+    background-color: aquamarine;
+}
+label{
+    display: block;
+    margin-bottom: 30px;
+    font-weight: bold;
+    
+}
+select, input[type="submit"] {
+    
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+h3{position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #00264d;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 14px;
+    display: inline-block;
+    
+
 }

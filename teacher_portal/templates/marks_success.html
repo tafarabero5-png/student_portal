@@ -1,11 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MARKS SAVED</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Saved Successfully</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='successful.css') }}">
 </head>
 <body>
-    <h2>Marks Saved Successfully !!!!!</h2>
-    <a href="{{'/'}}"><button>Return to login</button></a>   
+<div class="dashboard">
+    <aside class="sidebar">
+        <h2><u>TEACHER</u></h2>
+        <ul>
+            <li>Marks have been<br>saved successfully!!</li><br><br><br>
+            <li><u>REMARK</u></li>
+            <li>Take a screenshot<br>you won't see<br>it again</li><br><br><br>
+            <li>Logout After<br>Dashboard View</li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <div class="cards">
+                <div class="card teal">Total Students:<br><strong>{{ total_students }}</strong></div>
+                <div class="card green">Overall Subject Pass Rate:<br><strong>{{ pass_rate }}%</strong></div>
+                <div class="card blue">Top Performer:<br><strong>{{ top_performer.name }} ({{ top_performer.max_score }}%)</strong></div>
+                <div class="card orange">Subject:<br><strong>{{ subject_name }}</strong></div>
+            </div>
+        </header>
+
+        <section class="tables">
+            <div class="table-section">
+                <div class="table-title">Top 5 Students</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Mark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in top_5 %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.score }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-section">
+                <div class="table-title">Bottom 5 Students</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Mark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in bottom_5 %}
+                        <tr>
+                            <td>{{ student.student_id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.score }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="container">
+            <a href="{{ url_for('logout') }}"><button>LOGOUT</button></a>
+        </div>
+    </main>
+</div>
+<h3>NEO-CLASS-FCA</h3>
 </body>
 </html>
+
