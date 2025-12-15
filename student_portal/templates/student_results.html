@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Results</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='results_design.css') }}">
 </head>
@@ -13,7 +11,7 @@
     
   <h4>Student Name :{{ student.firstname }} {{ student.surname }}</h4>
   <h4>Level : Advanced Level</h4>
-  <h4>school :First Class Academy</h4>
+  <h4>School :First Class Academy</h4>
   
 
   <p>Total Subjects: {{ results|length }}</p>
