@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ class_name }} - Term {{ term }} Reports</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='report_style.css') }}">
+</head>
+<body>
+  {% for report in reports %}
+  <div class="report">
+    <h2>First class Academy</h2>
+    <h3>Term {{ term }} Report Card</h3>
+
+    <div class="info">
+      <strong>Student:</strong> {{ report.student.firstname }} {{ report.student.surname }}<br>
+      <strong>Class:</strong> {{ class_name }}<br>
+      <strong>Student ID:</strong> {{ report.student.id }}
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Score (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mark in report.marks %}
+        <tr>
+          <td>{{ mark.subject }}</td>
+          <td>{{ mark.score }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+     <div class="footer">
+      Grading: A = 80-100 | B = 60-79 | C = below 60
+    </div>
+  </div>
+  {% endfor %}
+</body>
+</html>

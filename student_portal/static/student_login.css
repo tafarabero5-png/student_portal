@@ -50,7 +50,7 @@ h3{position: absolute;
 button {
     width: 100%;
     padding: 14px;
-    background-color: #0066cc;
+    background-color:#00264d;
     color: white;
     border: none;
     border-radius: 4px;
@@ -60,5 +60,30 @@ button {
 }
 
 button:hover{
-   background-color: #00264d;
+   background-color:  #0066cc;
 }
+.top-bar{
+    background-color: #003366;
+    color: white;
+    height: 35px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 17px;
+    position: sticky;
+    top: 1;
+    z-index: 1000;
+}
+.top-bar .school-name{
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+
+}
+.logo{
+    height: 120px;
+    width: auto;
+    margin-top: 10px;
+    
+}
+

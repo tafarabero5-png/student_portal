@@ -52,28 +52,35 @@ def student_login():
 #student view the results
 @app.route('/student_portal', methods=['GET', 'POST'])
 def student_portal():
-    if request.method == 'POST':
-        student_id = request.form['id']  # Adjusted to match login form field
+     if request.method == 'POST':
+        student_id = request.form.get('id')
+        term = request.form.get('term')
         session['student_id'] = student_id
-    else:
+        session['term'] = term
+     else:
         student_id = session.get('student_id')
-        term=session.get('term')
+        term = session.get('term')
 
-    if not student_id:
+     if not student_id or not term:
         return redirect('/')
 
-    conn = get_database()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+     conn = get_database()
+     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+     # Fetch student info along with their class name
+     cursor.execute("""
+        SELECT s.*, c.name as class_name
+        FROM students s
+        JOIN classes c ON s.class_id = c.id
+        WHERE s.id = %s
+     """, (student_id,))
+     student = cursor.fetchone()
+     if not student:
+      return "Student not found"
 
-    cursor.execute("SELECT * FROM students WHERE id=%s", (student_id,))
-    student = cursor.fetchone()
-
-    if not student:
-        return "Student not found"
-
-    cursor.execute("""
-    SELECT s.name AS subject, m.score,
-    CASE 
+#Fetch marks for the student and term
+     cursor.execute("""
+     SELECT sub.name AS subject, m.score,
+     CASE 
         WHEN m.score >= 75 THEN 'A'
         WHEN m.score >= 65 THEN 'B'
         WHEN m.score >= 50 THEN 'C'
@@ -82,16 +89,16 @@ def student_portal():
         ELSE 'O'
     END AS grade
     FROM marks m
-    JOIN subjects s ON m.subject_id = s.id
-    WHERE m.student_id = %s AND m.term=%s
-""", (student_id,term))
+    JOIN subjects sub ON m.subject_id = sub.id
+    WHERE m.student_id = %s AND m.term = %s
+""", (student_id, term))
 
-    results = cursor.fetchall()
+     results = cursor.fetchall()
+     cursor.close()
+     conn.close()
 
-    cursor.close()
-    conn.close()
+     return render_template('student_results.html', student=student, results=results, term=term)
 
-    return render_template('student_results.html', student=student, results=results,term=term)
 
 
 #Entry point

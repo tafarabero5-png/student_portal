@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN DASHBOARD</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='admin_dashboard.css')}}">
+    <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2>ADMIN</h2>
+            <ul>
+                <li>Dashboard</li>
+                <li>Add New Student</li>
+                <li>Top Performers</li>
+                <li>Perfomance Graphs</li>
+                <li>Pass Rates</li>
+                <li>Lock/Unlock portal</li>
+                <li>LogOut</li>
+                <li><section class="generate-reports">
+  <h3>Generate Reports</h3>
+  <form method="POST" action="{{ url_for('generate_reports') }}">
+    <label for="class_id">Select Class:</label>
+    <select id="class_id" name="class_id" required>
+      <option value="" disabled selected>Select Class</option>
+      {% for cls in classes %}
+      <option value="{{ cls.id }}">{{ cls.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="term">Select Term:</label>
+    <select id="term" name="term" required>
+      <option value="" disabled selected>Select Term</option>
+      <option value="1">Term 1</option>
+      <option value="2">Term 2</option>
+      <option value="3">Term 3</option>
+    </select>
+
+    <button type="submit">Generate PDF Reports</button>
+  </form>
+</section>
+</li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header>
+                <div class="card green">Overall Pass Rate:<br><strong>{{stats.overall_pass_rate}}</strong></div>
+                <div class="card blue">Top Perfomer:<br><strong>{{stats.top_performer}}</strong></div>
+                <div class="card orange">Class Name:<br><strong>{{stats.class_name}}</strong></div>
+            </header>
+            <section class="charts">
+                <canvas id="barChart" width="300" height="200"></canvas>
+                <canvas id="lineChart" width="300" height="200"></canvas>
+            </section>
+        </main>
+    </div>
+     <script>
+        const barCTX = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(barCTX, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_data.subjects | default([]) | tojson }},
+                datasets: [{
+                    label: 'Pass Rate (%)',
+                    data: {{ chart_data.pass_rates | default([]) | tojson }},
+                        
+                    }
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    barThickness:20,
+                
+                }]
+            }
+        });
+
+        const lineCTX = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(lineCTX,{
+            type: 'line',
+            data: {
+                labels: {{ chart_data.terms | default([]) | tojson }},
+                datasets: [{
+                    label: 'Pass Rate (%)',
+                    data: {{ chart_data.term_pass_rates | default([]) | tojson }},
+                    backgroundColor: 'rgba(75, 192, 192, 1)',
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.3
+                    
+                }]
+            }
+        });
+    </script>
+
+
+</body>
+</html>

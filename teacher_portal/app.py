@@ -1,5 +1,8 @@
-from flask import Flask, render_template,request,redirect,session, url_for
+from flask import Flask, render_template,request,redirect,session, url_for,send_file
 import requests
+
+import psycopg2.extras
+
 import psycopg2
 import psycopg2.extras
 
@@ -136,7 +139,7 @@ def enter_marks():
         cursor.close()
         conn.close()
 
-        return redirect(url_for('mark_success', subject_id=subject_id))
+        return redirect(url_for('mark_success', subject_id=subject_id,class_id=class_id,term=term))
 
 
     else:
@@ -221,8 +224,8 @@ def save_marks():
     conn.close()
     return "Marks Saved Successfully"
 #returning back to the  login page
-@app.route('/marks_success/<int:subject_id>')
-def mark_success(subject_id):
+@app.route('/marks_success/<int:subject_id>/<int:class_id>/<term>')
+def mark_success(subject_id,class_id,term):
      conn=get_database()
      cursor=conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
      #suject name
@@ -230,52 +233,63 @@ def mark_success(subject_id):
      subject=cursor.fetchone()
      subject_name=subject['name'] if subject else "unknown"
      #class name
-     cursor.execute("select name from classes where id=%s",(subject_id,))
+     cursor.execute("select name from classes where id=%s",(class_id,))
      classes=cursor.fetchone()
      class_name=classes['name'] if classes else "unknown class"
                     
      
     #total students who do that subject
-     cursor.execute("select count(distinct student_id) from marks where subject_id=%s",(subject_id,))
+     cursor.execute("""
+    SELECT COUNT(DISTINCT m.student_id)
+    FROM marks m
+    JOIN students s ON s.id = m.student_id
+    WHERE m.subject_id = %s AND s.class_id = %s AND m.term = %s
+""", (subject_id, class_id, term))
      total_students=cursor.fetchone()[0]
      # Top performer (based on highest mark)
      cursor.execute("""
         SELECT s.firstname || ' ' || s.surname AS name, MAX(m.score) as max_score
         FROM marks m
         JOIN students s ON s.id = m.student_id
-                    where m.subject_id=%s
+                    where m.subject_id=%s AND s.class_id = %s AND m.term = %s
         GROUP BY s.firstname, s.surname
 
         ORDER BY  max_score DESC
         LIMIT 1;
-                    """,(subject_id,))
+                    """,(subject_id,class_id,term))
      top_performer = cursor.fetchone()
      #passrate for the subject
      cursor.execute("""
-        SELECT  
-               ROUND(COUNT(*) FILTER (WHERE m.score >= 50)::numeric / COUNT(*) * 100, 2) AS pass_rate
-        FROM marks as m
-        where m.subject_id=%s
-    """,(subject_id,))
-     pass_rate=cursor.fetchone()['pass_rate']
+    SELECT ROUND(
+        COUNT(*) FILTER (WHERE m.score >= 50)::numeric 
+        / NULLIF(COUNT(*), 0) * 100, 2
+    ) AS pass_rate
+    FROM marks m
+    JOIN students s ON s.id = m.student_id
+    WHERE m.subject_id = %s AND s.class_id = %s AND m.term = %s
+""", (subject_id, class_id, term))
+
+
+     pass_rate = cursor.fetchone()['pass_rate']
+
      #top 5 students
      cursor.execute("""
                     select s.firstname || ' ' || s.surname AS name,m.student_id,m.score 
                     from marks m
                     join students s on s.id=m.student_id
-                    where m.subject_id=%s
+                    where m.subject_id=%s AND s.class_id = %s AND m.term = %s
                     order by m.score desc
                     limit 5
-                    """,(subject_id,))
+                    """,(subject_id,class_id,term))
      top_5=cursor.fetchall()
      #bottom 5 students
      cursor.execute(""" select s.firstname || ' ' || s.surname AS name,m.student_id,m.score
                     from marks m
                     join students s on s.id=m.student_id
-                    where m.subject_id=%s
+                    where m.subject_id=%s AND s.class_id = %s AND m.term = %s
                     order by m.score asc
                     limit 5
-""",(subject_id,))
+""",(subject_id,class_id,term))
      bottom_5=cursor.fetchall()
      
      return render_template('marks_success.html',subject_name=subject_name,total_students=total_students,
@@ -291,4 +305,4 @@ def logout():
 
 #run app
 if __name__=='_main_':
- app.run(debug=True)
+ app.run(debug=True,)

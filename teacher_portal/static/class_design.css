@@ -68,3 +68,11 @@ h3{position: absolute;
     
 
 }
+.logo{
+    height: 120px;
+    width: auto;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    margin: 0 auto 20px;
+}

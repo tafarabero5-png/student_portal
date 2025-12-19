@@ -21,11 +21,15 @@
 </head>
 <body>
   <div class=" container">
+    <div class="logo">
+    <img src="{{url_for('static',filename='school.png')}}" alt="Logo" class="logo">
+  </div>
+    
     <h2>Select Class, Subject, and Term</h2>
 
     <form method="GET" action="/enter_marks">
         <label for="class_id">Class:</label>
-        <select id="class_id" name="class_id" onchange="filterSubjects()" required>
+        <select id="class_id" name="class_id" onchange="filterSubjects()"required>
             <option value="" disabled selected>Select Class</option>
             {% for cls in classes %}
             <option value="{{ cls.id }}">{{ cls.name }}</option>
@@ -54,6 +58,7 @@
         <button type="submit">Proceed to Enter Marks</button>
     </form>
  </div>
+
  <h3>NEO-CLASS-FCA</h3>     
 </body>
 </html>

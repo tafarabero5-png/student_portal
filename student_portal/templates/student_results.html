@@ -5,25 +5,46 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='results_design.css') }}">
 </head>
 <body>
- 
   <div class="container">
-     <h5>First Class Academy - <i>"where standards are set"</i> </h5>
+    <div class="header-s">
+     <header>
+      <img src="{{url_for('static',filename='school.png')}}" alt="Logo" class="logo">
+      <div class="title">
+      <h1>Result Portal</h1>
+      <p>First Class Academy</p>
+      </div>
+    </header>
+     </div>
     
-  <h4>Student Name :{{ student.firstname }} {{ student.surname }}</h4>
-  <h4>Level : Advanced Level</h4>
-  <h4>School :First Class Academy</h4>
+  <h4>STUDENT NAME <span class="name">: {{ student.firstname }} {{ student.surname }}</span></h4>
+  <h4>LEVEL <span class="level">: Advanced Level</span></h4>
+  <h4>CLASS<span class="class">: {{student.class_name}}</span></h4>
+  <h4>TERM<span class="term">: {{term}}</span></h4>
   
 
-  <p>Total Subjects: {{ results|length }}</p>
+  
 
-  {% for result in results %}
-    <div>
-      <strong>Subject:</strong> {{ result.subject }} <br>
-      <strong>Score:</strong> {{ result.score }} <br>
-      <strong>Grade:</strong> {{ result.grade }}
-    </div>
-    <hr>
-  {% endfor %}
+  
+   <table border="1" cellpadding="8">
+    <thead>
+        <tr class="subject-row">
+            <th>SUBJECT</th>
+            <th>Score</th>
+            <th>Grade</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+        <tr>
+            <td>{{ result.subject }}</td>
+            <td>{{ result.score }}</td>
+            <td>{{ result.grade }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p>Total Subjects: {{ results|length }}</p>
   <h3>NEO-CLASS-FCA</h3>
   </div>
 </body>
